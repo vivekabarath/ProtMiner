@@ -1,5 +1,3 @@
-# README.md
-
 # ProtMiner 🧬🧭
 
 > **Inclusive protein family discovery** using HMMER, DIAMOND, InterPro, and motif evidence — with optional topology/signal peptide metadata.
@@ -291,6 +289,59 @@ find-proteins \
 - SignalP is license-restricted; enable only if installed.
 - Add `--topology-metadata-only` to treat TM/SignalP as annotations only.
 - Start with **inclusive mode**; move to `thresholded` for stricter filtering.
+
+---
+
+## 📊 Output Files — Detailed
+
+ProtMiner produces several key outputs in the chosen `--outdir`:
+
+### 1. `all_proteins_annotation.tsv`
+
+- A **comprehensive table** of all proteins scanned with evidence and metadata.
+- Columns typically include:
+  - `Protein_ID`
+  - `Length`
+  - HMM evidence (`HMM_model`, `HMM_cov`, `HMM_ie`, `HMM_bits`)
+  - DIAMOND evidence (`pident`, `qcovhsp`, `scovhsp`, `bitscore`, `stitle`)
+  - InterPro evidence (`Signatures`, `InterProAccs`, `GO_terms`)
+  - Motif hits (`Motif_hits`)
+  - Topology & signal predictions (`TM_pred`, `Topology`, `SignalP`)
+  - Evidence flags (`ev_HMM`, `ev_DIAM`, `ev_IPR`, `ev_MOTIF`, `ev_LEN`, `ev_TM`, `ev_SP`)
+  - `evidence_count` and `evidence_sources`
+  - `keep_candidate` (boolean)
+
+**Example snippet:**
+
+```tsv
+Protein_ID	Length	HMM_model	HMM_cov	pident	Signatures	InterProAccs	Motif_hits	TM_pred	SignalP	ev_HMM	ev_DIAM	ev_IPR	ev_MOTIF	evidence_count	evidence_sources	keep_candidate
+protA	482	PF00201	0.95	62.1	PF00201;PF03106	IPR001296;IPR035595	45-72:FWx2QL...	0	None	1	1	1	1	4	HMM;DIAM;IPR;MOTIF	True
+protB	615	-	-	25.7	-	-	-	1	SP	0	1	0	0	1	DIAM	True
+```
+
+### 2. `candidates.tsv`
+
+- Subset of `all_proteins_annotation.tsv` containing only the **final positives** (`keep_candidate=True`).
+- Deduplicated by `Protein_ID`.
+
+### 3. `candidates.faa`
+
+- FASTA file of the sequences from `candidates.tsv`.
+- Headers usually include `Protein_ID` and evidence summary.
+
+**Example snippet:**
+
+```fasta
+>protA | HMM;DIAM;IPR;MOTIF
+MASSKTFVLLVLLAVAA...WQLEQLLL...
+>protB | DIAM
+MTDSQVKDLLELAAKRV...
+```
+
+### 4. `pipeline.log`
+
+- Full log of the run, including environment checks, executed commands, and warnings.
+- Useful for debugging.
 
 ---
 
