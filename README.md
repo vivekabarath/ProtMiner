@@ -1,3 +1,5 @@
+# README.md
+
 # ProtMiner 🧬🧭
 
 > **Inclusive protein family discovery** using HMMER, DIAMOND, InterPro, and motif evidence — with optional topology/signal peptide metadata.
@@ -248,6 +250,73 @@ Each row includes:
 
 ---
 
+## 📊 Output Files — Detailed
+
+ProtMiner produces several key outputs in the chosen `--outdir`:
+
+### 1. `all_proteins_annotation.tsv`
+
+- Comprehensive table of all proteins scanned with evidence and metadata.
+- Columns include: see explanation below.
+
+**Column explanations:**
+
+- `Protein_ID`: Identifier of the protein from FASTA.
+- `Length`: Sequence length in amino acids.
+- `HMM_model`: Pfam/custom HMM model ID matched.
+- `HMM_cov`: Fractional coverage of the HMM domain.
+- `HMM_ie`: Independent E-value from HMMER.
+- `HMM_bits`: Bitscore from HMMER.
+- `pident`: Percent identity to best DIAMOND hit.
+- `qcovhsp`/`scovhsp`: Query and subject coverage of HSP in DIAMOND.
+- `bitscore`: Alignment bitscore in DIAMOND.
+- `stitle`: Subject title (annotation) from DIAMOND DB.
+- `Signatures`: Raw domain signatures (Pfam/SMART/CDD).
+- `InterProAccs`: InterPro accession numbers.
+- `GO_terms`: Gene Ontology annotations from InterPro.
+- `Motif_hits`: Regex motif matches with positions.
+- `TM_pred`: Number of transmembrane segments predicted.
+- `Topology`: Predicted topology string (optional).
+- `SignalP`: Signal peptide prediction.
+- `ev_*`: Boolean evidence flags (1 if present, else 0).
+- `evidence_count`: Total number of evidence sources supporting the protein.
+- `evidence_sources`: Semicolon list of which sources triggered inclusion.
+- `keep_candidate`: True if selected as final positive.
+
+**Example snippet:**
+
+```tsv
+Protein_ID	Length	HMM_model	HMM_cov	pident	Signatures	InterProAccs	Motif_hits	TM_pred	SignalP	ev_HMM	ev_DIAM	ev_IPR	ev_MOTIF	evidence_count	evidence_sources	keep_candidate
+protA	482	PF00201	0.95	62.1	PF00201;PF03106	IPR001296;IPR035595	45-72:FWx2QL...	0	None	1	1	1	1	4	HMM;DIAM;IPR;MOTIF	True
+protB	615	-	-	25.7	-	-	-	1	SP	0	1	0	0	1	DIAM	True
+```
+
+### 2. `candidates.tsv`
+
+- Subset of `all_proteins_annotation.tsv` containing only the final positives (`keep_candidate=True`).
+- Deduplicated by `Protein_ID`.
+
+### 3. `candidates.faa`
+
+- FASTA file of the sequences from `candidates.tsv`.
+- Headers usually include `Protein_ID` and evidence summary.
+
+**Example snippet:**
+
+```fasta
+>protA | HMM;DIAM;IPR;MOTIF
+MASSKTFVLLVLLAVAA...WQLEQLLL...
+>protB | DIAM
+MTDSQVKDLLELAAKRV...
+```
+
+### 4. `pipeline.log`
+
+- Full log of the run, including environment checks, executed commands, and warnings.
+- Useful for debugging.
+
+---
+
 ## 🧪 Example Workflows
 
 **UGTs (inclusive evidence-only, with motif + size restriction)**
@@ -292,24 +361,47 @@ find-proteins \
 
 ---
 
+## 📊 Output Files
+
+- `all_proteins_annotation.tsv` — all evidence merged
+- `candidates.tsv` — final positives (deduplicated)
+- `candidates.faa` — FASTA of candidates
+- `pipeline.log` — commands and logs
+
+---
+
 ## 📊 Output Files — Detailed
 
 ProtMiner produces several key outputs in the chosen `--outdir`:
 
 ### 1. `all_proteins_annotation.tsv`
 
-- A **comprehensive table** of all proteins scanned with evidence and metadata.
-- Columns typically include:
-  - `Protein_ID`
-  - `Length`
-  - HMM evidence (`HMM_model`, `HMM_cov`, `HMM_ie`, `HMM_bits`)
-  - DIAMOND evidence (`pident`, `qcovhsp`, `scovhsp`, `bitscore`, `stitle`)
-  - InterPro evidence (`Signatures`, `InterProAccs`, `GO_terms`)
-  - Motif hits (`Motif_hits`)
-  - Topology & signal predictions (`TM_pred`, `Topology`, `SignalP`)
-  - Evidence flags (`ev_HMM`, `ev_DIAM`, `ev_IPR`, `ev_MOTIF`, `ev_LEN`, `ev_TM`, `ev_SP`)
-  - `evidence_count` and `evidence_sources`
-  - `keep_candidate` (boolean)
+- Comprehensive table of all proteins scanned with evidence and metadata.
+- Columns include: see explanation below.
+
+**Column explanations:**
+
+- `Protein_ID`: Identifier of the protein from FASTA.
+- `Length`: Sequence length in amino acids.
+- `HMM_model`: Pfam/custom HMM model ID matched.
+- `HMM_cov`: Fractional coverage of the HMM domain.
+- `HMM_ie`: Independent E-value from HMMER.
+- `HMM_bits`: Bitscore from HMMER.
+- `pident`: Percent identity to best DIAMOND hit.
+- `qcovhsp`/`scovhsp`: Query and subject coverage of HSP in DIAMOND.
+- `bitscore`: Alignment bitscore in DIAMOND.
+- `stitle`: Subject title (annotation) from DIAMOND DB.
+- `Signatures`: Raw domain signatures (Pfam/SMART/CDD).
+- `InterProAccs`: InterPro accession numbers.
+- `GO_terms`: Gene Ontology annotations from InterPro.
+- `Motif_hits`: Regex motif matches with positions.
+- `TM_pred`: Number of transmembrane segments predicted.
+- `Topology`: Predicted topology string (optional).
+- `SignalP`: Signal peptide prediction.
+- `ev_*`: Boolean evidence flags (1 if present, else 0).
+- `evidence_count`: Total number of evidence sources supporting the protein.
+- `evidence_sources`: Semicolon list of which sources triggered inclusion.
+- `keep_candidate`: True if selected as final positive.
 
 **Example snippet:**
 
@@ -321,7 +413,7 @@ protB	615	-	-	25.7	-	-	-	1	SP	0	1	0	0	1	DIAM	True
 
 ### 2. `candidates.tsv`
 
-- Subset of `all_proteins_annotation.tsv` containing only the **final positives** (`keep_candidate=True`).
+- Subset of `all_proteins_annotation.tsv` containing only the final positives (`keep_candidate=True`).
 - Deduplicated by `Protein_ID`.
 
 ### 3. `candidates.faa`
@@ -356,86 +448,46 @@ ProtMiner/
 ├─ src/
    └─ protminer/
       ├─ __init__.py
-      ├─ cli.py            # command‑line interface & pipeline orchestrator
+      ├─ cli.py            # command-line interface & pipeline orchestrator
       ├─ scoring.py        # evidence logic (inclusive/thresholded) & final filtering
       ├─ parsers.py        # readers for HMMER/DIAMOND/InterPro outputs
       ├─ utils.py          # helpers: which(), have(), run_logged(), ensure_dir()
-      └─ install.py        # dependency checks & (optional) auto‑install hints
+      └─ install.py        # dependency checks & (optional) auto-install hints
 
 ```
 
 ### `cli.py` — pipeline orchestrator
 
-**What it does:**
-
-- Parses CLI flags (input FASTA, HMMs, motif, DIAMOND reference, IPR/Pfam allow‑lists, topology/signal/length options, scoring mode).
-- Runs environment checks and *optional* tool discovery/installation hints (`install.try_install`).
-- Executes stages:
-  1. **Deduplicate FASTA** (via `seqkit rmdup` if available).
-  2. **HMMER** (`hmmsearch --domtblout`) → parse with `parsers.parse_hmmer_domtbl`.
-  3. **DIAMOND** (if `--ref-fasta`) → make DB + `diamond blastp` → parse with `parsers.parse_diamond_tsv`.
-  4. **InterProScan** (if available) → TSV → `parsers.parse_interpro_tsv`.
-  5. **TM predictors / SignalP** (metadata unless you choose thresholded filters).
-  6. **Motif** regex scan (inline), producing `Motif_hits`.
-  7. **Merge** per‑protein evidence into a master `DataFrame`.
-  8. **Score & filter** via `scoring.score_and_filter`.
-  9. **Emit outputs** (`all_proteins_annotation.tsv`, `candidates.tsv`, `candidates.faa`, `pipeline.log`).
-
-**Key functions & I/O:**
-
-- `lengths_of_fasta(fasta)->DataFrame`: `Protein_ID`, `Length`.
-- `write_fasta_subset(all_faa, ids, out_faa)`: exports candidate sequences.
-- `scan_motif(fasta, motif)->dict`: `{Protein_ID: "start-end:motif;..."}`.
-
-**Extend it:**
-
-- To add a new analysis stage, compute a `DataFrame` with a `Protein_ID` column and merge it into `master` before calling `score_and_filter`.
+- Parses CLI flags (input FASTA, HMMs, motif, DIAMOND reference, IPR/Pfam allow-lists, topology/signal/length options, scoring mode).
+- Runs environment checks and optional tool discovery/installation hints.
+- Executes stages: deduplication, HMMER, DIAMOND, InterProScan, TM/SignalP, motif scan, merge evidence, scoring/filtering, output.
 
 ### `scoring.py` — evidence logic
 
-**Core entry point:** `score_and_filter(df, ..., scoring_mode="inclusive") -> DataFrame`
-
-**Inputs (selected):**
-
-- Evidence columns expected (if present): `HMM_cov`, `HMM_ie`, `pident`, `qcovhsp`, `scovhsp`, `Signatures`, `InterProAccs`, `Motif_hits`, `TM_pred`, `Topology`, `SignalP`, `Length`.
-- Allow‑lists: `allow_pfam` (e.g., `{"PF00201"}`), `allow_ipr` (e.g., `{"IPR001296"}`).
-- Topology/SignalP/length options (used mainly in thresholded mode unless you override).
-
-**What it computes:**
-
-- Boolean evidence flags per protein: `ev_HMM`, `ev_DIAM`, `ev_IPR`, `ev_MOTIF`, plus metadata‑driven `ev_LEN`, `ev_TM`, `ev_SP`.
-- `evidence_count` and \`\` according to mode:
-  - **inclusive (default):** keep if any of `HMM|DIAMOND|IPR|MOTIF` is true.
-  - **thresholded:** optionally require `--require-two-evidences` in addition to HMM (stricter).
-- `evidence_sources`: semicolon list (e.g., `HMM;IPR;MOTIF`).
-- Deduplicates by `Protein_ID`.
-
-**Extend it:** add a new evidence source by:
-
-1. Ensuring your `cli.py` stage merges a column (e.g., `NewTool_score`) onto `master`.
-2. In `scoring.py`, set `d["ev_NEWTOOL"] = (your threshold logic)`.
-3. Add `"ev_NEWTOOL"` to the evidence list and to the `evidence_sources` aggregator.
+- Core function: `score_and_filter(df, ..., scoring_mode="inclusive")`.
+- Sets evidence flags, counts, and selects candidates according to inclusive/thresholded rules.
+- Extendable: add new evidence flags by merging new columns and adjusting logic.
 
 ### `parsers.py` — file readers
 
-- `parse_hmmer_domtbl(path)->DataFrame`
-  - Reads `--domtblout` lines, keeps **best domain per protein**, emits columns: `Protein_ID`, `HMM_model`, `HMM_cov`, `HMM_ie`, `HMM_bits`, `qlen`, `tlen`, etc.
-  - `HMM_cov` computed as domain length ÷ HMM model length.
-- `parse_diamond_tsv(path)->DataFrame`
-  - Expects outfmt 6 with columns: `qseqid sseqid pident length evalue bitscore qcovhsp scovhsp stitle`.
-  - Keeps best hit per protein and casts numeric fields.
-- `parse_interpro_tsv(path)->DataFrame`
-  - Aggregates per protein: `Signatures` (Pfam/SMART/CDD IDs), `SignatureDescs`, `InterProAccs`, `InterProDescs`, `GO_terms`.
-
-**Extend it:**
-
-- Add a `parse_*` for any new tool and return a `DataFrame` keyed by `Protein_ID`.
+- `parse_hmmer_domtbl`, `parse_diamond_tsv`, `parse_interpro_tsv`.
+- Each returns a DataFrame keyed by `Protein_ID`.
 
 ### `utils.py` — helpers
 
-- `have(tool)->bool`, `which(tool)->str|None`: CLI discovery.
-- `run_logged(cmd, log)->int`: runs a command and appends stdout/stderr to `pipeline.log` with a `# CMD:` header.
-- `ensure_dir(path)`: safe `mkdir -p`.
+- `have()`, `which()`, `run_logged()`, `ensure_dir()`.
 
-### \`install.py
+### `install.py` — dependency checks
+
+- Ensures Python modules and external tools exist; prints installation hints.
+
+---
+
+## 🔮 Roadmap
+
+- Add visualization utilities (plots, summaries).
+- Extend to additional domain databases.
+- Provide Docker image for consistent environments.
+- Improve motif scanning with PROSITE/ELM conversion.
+- Add benchmarking datasets and tests.
 
