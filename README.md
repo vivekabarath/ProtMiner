@@ -1,16 +1,15 @@
 # README.md
 
-# ProtScout 🧬🧭
+# ProtMiner 🧬🧭
 
 > **Inclusive protein family discovery** using HMMER, DIAMOND, InterPro, and motif evidence — with optional topology/signal peptide metadata.
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
-[![Conda](https://img.shields.io/badge/conda-bioconda%20%7C%20conda--forge-blue)](#-installation)
-[![Python](https://img.shields.io/badge/python-3.9%2B-blue)](#-installation)
+&#x20;&#x20;
 
 ---
 
 ## Table of Contents
+
 - [Overview](#overview)
 - [Installation](#-installation)
 - [Input Requirements](#-input-requirements)
@@ -26,18 +25,22 @@
 - [Outputs](#-output-files)
 - [Example Workflows](#-example-workflows)
 - [Best Practices](#-best-practices)
+- [Code Structure & Extensibility](#-code-structure--extensibility)
 - [Roadmap](#-roadmap)
 
 ---
 
 ## Overview
-ProtScout identifies proteins belonging to a given family by combining multiple evidence sources:
+
+ProtMiner identifies proteins belonging to a given family by combining multiple evidence sources:
+
 - **HMMER** (Pfam / custom HMMs)
 - **DIAMOND** (reference similarity search)
 - **InterProScan** (Pfam/SMART/CDD/IPR signatures)
 - **Motif search** (regex)
 
 Optional metadata filters:
+
 - **Transmembrane topology** (TMHMM / DeepTMHMM)
 - **Signal peptides** (SignalP)
 - **Protein length ranges**
@@ -47,22 +50,25 @@ Optional metadata filters:
 ## 🚀 Installation
 
 ### Clone and install
+
 ```bash
-git clone https://github.com/<yourusername>/ProtScout.git
-cd ProtScout
+git clone https://github.com/<yourusername>/ProtMiner.git
+cd ProtMiner
 
 # Create environment
 conda env create -f environment.yml
-conda activate protscout
+conda activate protminer
 
 # Install package
 pip install -e .
 ```
 
 ### Verify environment
+
 ```bash
 find-proteins --check-env
 ```
+
 This prints which Python modules and external tools (`hmmsearch`, `diamond`, `interproscan.sh`, `seqkit`, `tmhmm`, `deeptmhmm`, `signalp`) are detected.
 
 > **Note:** If `deeptmhmm` is unavailable for your conda mirror, create the env without it and add later (or install via `pip`).
@@ -70,6 +76,7 @@ This prints which Python modules and external tools (`hmmsearch`, `diamond`, `in
 ---
 
 ## 📂 Input Requirements
+
 - **Protein FASTA** (`--fasta`)
 - **HMM profile(s)** (`--hmm`)
 - *(Optional)* **Reference FASTA** for DIAMOND (`--ref-fasta`)
@@ -83,7 +90,9 @@ This prints which Python modules and external tools (`hmmsearch`, `diamond`, `in
 ## 🛠 Usage Examples
 
 ### 1. Inclusive Mode (Default)
+
 Keep any protein with **HMM, InterPro, DIAMOND, or motif** evidence.
+
 ```bash
 find-proteins \
   --fasta proteome.faa \
@@ -95,7 +104,9 @@ find-proteins \
 ```
 
 ### 2. Thresholded Mode (Stricter)
+
 Require HMM hit plus ≥2 evidence sources if `--require-two-evidences` is set.
+
 ```bash
 find-proteins \
   --fasta proteome.faa \
@@ -108,7 +119,9 @@ find-proteins \
 ```
 
 ### 3. Add DIAMOND Evidence
+
 Use curated reference proteins to increase confidence.
+
 ```bash
 find-proteins \
   --fasta proteome.faa \
@@ -121,7 +134,9 @@ find-proteins \
 ```
 
 ### 4. Add Motif Evidence
+
 Regex pattern (not PROSITE syntax).
+
 ```bash
 find-proteins \
   --fasta proteome.faa \
@@ -134,7 +149,9 @@ find-proteins \
 ```
 
 ### 5. Apply Size Restriction
+
 Filter candidates by length.
+
 ```bash
 find-proteins \
   --fasta proteome.faa \
@@ -145,7 +162,9 @@ find-proteins \
 ```
 
 ### 6. Topology Filters
+
 **Soluble families (no TM domains):**
+
 ```bash
 find-proteins \
   --fasta proteome.faa \
@@ -154,7 +173,9 @@ find-proteins \
   --tm-max 0 \
   --scoring-mode thresholded
 ```
+
 **ER-anchored CYPs (single TM helix):**
+
 ```bash
 find-proteins \
   --fasta proteome.faa \
@@ -165,7 +186,9 @@ find-proteins \
 ```
 
 ### 7. Signal Peptides
+
 Require or forbid N-terminal signal peptide.
+
 ```bash
 # Require SP
 find-proteins \
@@ -183,7 +206,9 @@ find-proteins \
 ```
 
 ### 8. Maximum Parameters (All Features Enabled)
+
 A comprehensive run combining **HMM, Pfam, InterPro, DIAMOND, motif, length restriction, TM topology, and SignalP**:
+
 ```bash
 find-proteins \
   --fasta proteome.faa \
@@ -199,7 +224,9 @@ find-proteins \
   --require-two-evidences \
   --scoring-mode thresholded
 ```
+
 This setup:
+
 - Combines evidence sources (HMM, IPR/Pfam, DIAMOND, motif)
 - Restricts to expected length range
 - Requires exactly 1 TM helix and a signal peptide
@@ -208,12 +235,14 @@ This setup:
 ---
 
 ## 📊 Output Files
+
 - `all_proteins_annotation.tsv` — all evidence merged
 - `candidates.tsv` — final positives (deduplicated)
 - `candidates.faa` — FASTA of candidates
 - `pipeline.log` — commands and logs
 
 Each row includes:
+
 - `Protein_ID`
 - Evidence flags (`ev_HMM`, `ev_DIAM`, `ev_IPR`, `ev_MOTIF`)
 - `evidence_sources` (summary of which sources triggered inclusion)
@@ -222,7 +251,9 @@ Each row includes:
 ---
 
 ## 🧪 Example Workflows
+
 **UGTs (inclusive evidence-only, with motif + size restriction)**
+
 ```bash
 find-proteins \
   --fasta plant_proteome.faa \
@@ -234,7 +265,9 @@ find-proteins \
   --len-min 380 --len-max 520 \
   --scoring-mode inclusive
 ```
+
 **CYP450s (thresholded with topology)**
+
 ```bash
 find-proteins \
   --fasta proteome.faa \
@@ -250,6 +283,7 @@ find-proteins \
 ---
 
 ## ⚠️ Best Practices
+
 - Always include at least one **HMM profile**.
 - Use `--allow-pfam` / `--allow-ipr` to restrict InterPro evidence to your family.
 - Motifs must be **regex** (convert PROSITE manually).
@@ -260,8 +294,100 @@ find-proteins \
 
 ---
 
-## 🔮 Roadmap
-- Preset configs (`presets/ugt.yaml`, `presets/cyp.yaml`)
-- PROSITE → regex conversion (`--motif-prosite`)
-- Containerized distribution (Docker/Singularity)
+## 🧱 Code Structure & Extensibility
+
+### Repository layout
+
+```
+ProtMiner/
+├─ README.md
+├─ environment.yml
+├─ src/
+│  └─ protminer/
+│     ├─ __init__.py
+│     ├─ cli.py            # command‑line interface & pipeline orchestrator
+│     ├─ scoring.py        # evidence logic (inclusive/thresholded) & final filtering
+│     ├─ parsers.py        # readers for HMMER/DIAMOND/InterPro outputs
+│     ├─ utils.py          # helpers: which(), have(), run_logged(), ensure_dir()
+│     └─ install.py        # dependency checks & (optional) auto‑install hints
+├─ examples/
+│  ├─ proteins.demo.faa
+│  └─ PF00201.demo.hmm
+└─ docs/ (optional site)
+```
+
+### `cli.py` — pipeline orchestrator
+
+**What it does:**
+
+- Parses CLI flags (input FASTA, HMMs, motif, DIAMOND reference, IPR/Pfam allow‑lists, topology/signal/length options, scoring mode).
+- Runs environment checks and *optional* tool discovery/installation hints (`install.try_install`).
+- Executes stages:
+  1. **Deduplicate FASTA** (via `seqkit rmdup` if available).
+  2. **HMMER** (`hmmsearch --domtblout`) → parse with `parsers.parse_hmmer_domtbl`.
+  3. **DIAMOND** (if `--ref-fasta`) → make DB + `diamond blastp` → parse with `parsers.parse_diamond_tsv`.
+  4. **InterProScan** (if available) → TSV → `parsers.parse_interpro_tsv`.
+  5. **TM predictors / SignalP** (metadata unless you choose thresholded filters).
+  6. **Motif** regex scan (inline), producing `Motif_hits`.
+  7. **Merge** per‑protein evidence into a master `DataFrame`.
+  8. **Score & filter** via `scoring.score_and_filter`.
+  9. **Emit outputs** (`all_proteins_annotation.tsv`, `candidates.tsv`, `candidates.faa`, `pipeline.log`).
+
+**Key functions & I/O:**
+
+- `lengths_of_fasta(fasta)->DataFrame`: `Protein_ID`, `Length`.
+- `write_fasta_subset(all_faa, ids, out_faa)`: exports candidate sequences.
+- `scan_motif(fasta, motif)->dict`: `{Protein_ID: "start-end:motif;..."}`.
+
+**Extend it:**
+
+- To add a new analysis stage, compute a `DataFrame` with a `Protein_ID` column and merge it into `master` before calling `score_and_filter`.
+
+### `scoring.py` — evidence logic
+
+**Core entry point:** `score_and_filter(df, ..., scoring_mode="inclusive") -> DataFrame`
+
+**Inputs (selected):**
+
+- Evidence columns expected (if present): `HMM_cov`, `HMM_ie`, `pident`, `qcovhsp`, `scovhsp`, `Signatures`, `InterProAccs`, `Motif_hits`, `TM_pred`, `Topology`, `SignalP`, `Length`.
+- Allow‑lists: `allow_pfam` (e.g., `{"PF00201"}`), `allow_ipr` (e.g., `{"IPR001296"}`).
+- Topology/SignalP/length options (used mainly in thresholded mode unless you override).
+
+**What it computes:**
+
+- Boolean evidence flags per protein: `ev_HMM`, `ev_DIAM`, `ev_IPR`, `ev_MOTIF`, plus metadata‑driven `ev_LEN`, `ev_TM`, `ev_SP`.
+- `evidence_count` and \`\` according to mode:
+  - **inclusive (default):** keep if any of `HMM|DIAMOND|IPR|MOTIF` is true.
+  - **thresholded:** optionally require `--require-two-evidences` in addition to HMM (stricter).
+- `evidence_sources`: semicolon list (e.g., `HMM;IPR;MOTIF`).
+- Deduplicates by `Protein_ID`.
+
+**Extend it:** add a new evidence source by:
+
+1. Ensuring your `cli.py` stage merges a column (e.g., `NewTool_score`) onto `master`.
+2. In `scoring.py`, set `d["ev_NEWTOOL"] = (your threshold logic)`.
+3. Add `"ev_NEWTOOL"` to the evidence list and to the `evidence_sources` aggregator.
+
+### `parsers.py` — file readers
+
+- `parse_hmmer_domtbl(path)->DataFrame`
+  - Reads `--domtblout` lines, keeps **best domain per protein**, emits columns: `Protein_ID`, `HMM_model`, `HMM_cov`, `HMM_ie`, `HMM_bits`, `qlen`, `tlen`, etc.
+  - `HMM_cov` computed as domain length ÷ HMM model length.
+- `parse_diamond_tsv(path)->DataFrame`
+  - Expects outfmt 6 with columns: `qseqid sseqid pident length evalue bitscore qcovhsp scovhsp stitle`.
+  - Keeps best hit per protein and casts numeric fields.
+- `parse_interpro_tsv(path)->DataFrame`
+  - Aggregates per protein: `Signatures` (Pfam/SMART/CDD IDs), `SignatureDescs`, `InterProAccs`, `InterProDescs`, `GO_terms`.
+
+**Extend it:**
+
+- Add a `parse_*` for any new tool and return a `DataFrame` keyed by `Protein_ID`.
+
+### `utils.py` — helpers
+
+- `have(tool)->bool`, `which(tool)->str|None`: CLI discovery.
+- `run_logged(cmd, log)->int`: runs a command and appends stdout/stderr to `pipeline.log` with a `# CMD:` header.
+- `ensure_dir(path)`: safe `mkdir -p`.
+
+### \`install.py
 
