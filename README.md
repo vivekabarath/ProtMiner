@@ -303,17 +303,14 @@ ProtMiner/
 ├─ README.md
 ├─ environment.yml
 ├─ src/
-│  └─ protminer/
-│     ├─ __init__.py
-│     ├─ cli.py            # command‑line interface & pipeline orchestrator
-│     ├─ scoring.py        # evidence logic (inclusive/thresholded) & final filtering
-│     ├─ parsers.py        # readers for HMMER/DIAMOND/InterPro outputs
-│     ├─ utils.py          # helpers: which(), have(), run_logged(), ensure_dir()
-│     └─ install.py        # dependency checks & (optional) auto‑install hints
-├─ examples/
-│  ├─ proteins.demo.faa
-│  └─ PF00201.demo.hmm
-└─ docs/ (optional site)
+   └─ protminer/
+      ├─ __init__.py
+      ├─ cli.py            # command‑line interface & pipeline orchestrator
+      ├─ scoring.py        # evidence logic (inclusive/thresholded) & final filtering
+      ├─ parsers.py        # readers for HMMER/DIAMOND/InterPro outputs
+      ├─ utils.py          # helpers: which(), have(), run_logged(), ensure_dir()
+      └─ install.py        # dependency checks & (optional) auto‑install hints
+
 ```
 
 ### `cli.py` — pipeline orchestrator
