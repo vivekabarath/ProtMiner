@@ -1,0 +1,14 @@
+README.md
+pyproject.toml
+src/protscout/__init__.py
+src/protscout/cli.py
+src/protscout/install.py
+src/protscout/parsers.py
+src/protscout/scoring.py
+src/protscout/utils.py
+src/protscout.egg-info/PKG-INFO
+src/protscout.egg-info/SOURCES.txt
+src/protscout.egg-info/dependency_links.txt
+src/protscout.egg-info/entry_points.txt
+src/protscout.egg-info/requires.txt
+src/protscout.egg-info/top_level.txt

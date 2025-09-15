@@ -1,0 +1,3 @@
+pandas>=1.2
+biopython>=1.79
+argcomplete>=3.0.0

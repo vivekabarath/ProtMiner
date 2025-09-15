@@ -1,0 +1,17 @@
+name: protscout
+channels:
+  - conda-forge
+  - bioconda
+dependencies:
+  - python>=3.9
+  - pandas
+  - biopython
+  - argcomplete
+  - hmmer
+  - diamond
+  - seqkit
+  - deeptmhmm
+  # Optional / big:
+  # - interproscan
+  # Optional / license-restricted:
+  # - signalp

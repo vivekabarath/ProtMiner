@@ -1,0 +1,42 @@
+Metadata-Version: 2.4
+Name: protscout
+Version: 0.5.0
+Summary: ProtScout: inclusive protein family discovery using HMMER, DIAMOND, InterPro, motifs, with optional topology/signal filters.
+Author: Baradwaj (with ChatGPT assistance)
+Requires-Python: >=3.8
+Description-Content-Type: text/markdown
+Requires-Dist: pandas>=1.2
+Requires-Dist: biopython>=1.79
+Requires-Dist: argcomplete>=3.0.0
+
+# ProtScout v0.5.0 🧭🧬
+
+ProtScout finds proteins belonging to a target family using **HMMER (hmmsearch)**, **DIAMOND**, **InterProScan**, and **motif** searches. It supports optional topology (TMHMM/DeepTMHMM) and SignalP checks. The default **inclusive** scoring keeps any protein positive by HMM/InterPro/Pfam/DIAMOND/motif and deduplicates final results.
+
+## Install
+```bash
+conda create -n protscout python=3.10 && conda activate protscout
+conda install -c conda-forge -c bioconda hmmer diamond seqkit deeptmhmm
+# InterProScan (large) and SignalP (license-restricted) are optional.
+pip install -e .
+```
+
+## Environment check
+```bash
+find-proteins --check-env
+```
+
+## Quick usage
+```bash
+find-proteins   --fasta examples/proteins.demo.faa   --outdir out_run   --hmm examples/PF00201.demo.hmm   --allow-pfam PF00201 --allow-ipr IPR001296   --scoring-mode inclusive
+```
+
+## Output
+- `all_proteins_annotation.tsv` — merged annotations
+- `candidates.tsv` — final positives (deduplicated)
+- `candidates.faa` — FASTA of candidates
+- `pipeline.log` — commands/stdout log
+
+## Notes
+- Inclusive mode ignores TM/SignalP/length for inclusion unless you switch to `--scoring-mode thresholded` and provide those filters.
+- You can always add `--topology-metadata-only` to force TM/SignalP to be metadata only.
